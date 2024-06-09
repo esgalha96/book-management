@@ -1,8 +1,9 @@
 // src/book/book.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Book } from './schemas/book.schema';
+import { UpdateBookDto } from './dto/book-update.dto';
 
 @Injectable()
 export class BookService {
@@ -16,4 +17,26 @@ export class BookService {
     const createdBook = new this.bookModel(createBookDto);
     return createdBook.save();
   }
+
+  async update(updateBookDto: UpdateBookDto): Promise<Book> {
+    const existingBook = await this.bookModel.findById(updateBookDto._id);
+    if (!existingBook) {
+      throw new NotFoundException(`Book with ID ${updateBookDto._id} not found`);
+    }
+
+    if (updateBookDto.name) {
+      existingBook.name = updateBookDto.name;
+    }
+
+    if (updateBookDto.author) {
+      existingBook.author = updateBookDto.author;
+    }
+
+    if (updateBookDto.pages) {
+      existingBook.pages = updateBookDto.pages;
+    }
+
+    return existingBook.save();
+  }
+
 }
