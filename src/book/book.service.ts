@@ -13,9 +13,18 @@ export class BookService {
     return this.bookModel.find().populate('author').exec();
   }
 
+  async findOne(id: String): Promise<Book> {
+    
+    return this.bookModel.findById(id);
+  }
+
   async create(createBookDto: any): Promise<Book> {
     const createdBook = new this.bookModel(createBookDto);
     return createdBook.save();
+  }
+
+  async delete(id: String): Promise<Boolean> {
+    return this.bookModel.findByIdAndDelete(id);
   }
 
   async update(updateBookDto: UpdateBookDto): Promise<Book> {
